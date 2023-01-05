@@ -10,11 +10,11 @@
 package swagger
 
 type AzureConfigurationDetails struct {
-	Regions *Object `json:"regions,omitempty"`
-	Polling *ScheduleInterval `json:"polling,omitempty"`
+	Regions    *any                    `json:"regions,omitempty"`
+	Polling    *ScheduleInterval       `json:"polling,omitempty"`
 	ImportTags *ImportTagConfiguration `json:"importTags,omitempty"`
-	TagFilter string `json:"tagFilter,omitempty"`
-	Services *Object `json:"services,omitempty"`
+	TagFilter  string                  `json:"tagFilter,omitempty"`
+	Services   *any                    `json:"services,omitempty"`
 	// Azure Resource groups used to fetch metrics
 	ResourceGroups []string `json:"resourceGroups,omitempty"`
 }

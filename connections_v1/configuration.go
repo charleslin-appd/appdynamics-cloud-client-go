@@ -49,7 +49,7 @@ type APIKey struct {
 	Prefix string
 }
 
-type Configuration struct {
+type APIConfiguration struct {
 	BasePath      string            `json:"basePath,omitempty"`
 	Host          string            `json:"host,omitempty"`
 	Scheme        string            `json:"scheme,omitempty"`
@@ -58,15 +58,15 @@ type Configuration struct {
 	HTTPClient    *http.Client
 }
 
-func NewConfiguration() *Configuration {
-	cfg := &Configuration{
-		BasePath:      "http://cloudmonconnectionservice.cloudmon.svc.cluster.local:7778/api/v1",
+func NewConfiguration() *APIConfiguration {
+	cfg := &APIConfiguration{
+		BasePath:      "https://lab1.observe.appdynamics.com/cloud/v1",
 		DefaultHeader: make(map[string]string),
 		UserAgent:     "Swagger-Codegen/1.0.0/go",
 	}
 	return cfg
 }
 
-func (c *Configuration) AddDefaultHeader(key string, value string) {
+func (c *APIConfiguration) AddDefaultHeader(key string, value string) {
 	c.DefaultHeader[key] = value
 }
