@@ -1,0 +1,170 @@
+{
+    "items": [
+        {
+            "id": "4d9b59a8-84d2-4d4f-8b13-a17843ffe37f",
+            "type": "aws",
+            "displayName": "AWS-k8s-lab-charlesWed Jun 15 2022 12:00:45 GMT-0600 (MDT)",
+            "description": "",
+            "details": {
+                "polling": {
+                    "interval": 5,
+                    "unit": "minute"
+                },
+                "services": [
+                    {
+                        "name": "ec2",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "elb",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "ebs",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "rds",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    }
+                ],
+                "regions": [
+                    "us-west-1"
+                ],
+                "tagFilter": ""
+            },
+            "createdAt": "2022-06-15T18:00:47.367Z",
+            "updatedAt": "2022-06-15T18:02:08.665Z"
+        },
+        {
+            "id": "e5058ae6-d704-4583-abea-32166b5061a9",
+            "type": "aws",
+            "displayName": "AWS-monitoring-charleslinThu Jun 16 2022 10:52:04 GMT-0600 (MDT)",
+            "description": "",
+            "details": {
+                "polling": {
+                    "interval": 5,
+                    "unit": "minute"
+                },
+                "services": [
+                    {
+                        "name": "ec2",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "elb",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "ebs",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "rds",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    }
+                ],
+                "regions": [
+                    "us-west-1"
+                ],
+                "tagFilter": ""
+            },
+            "createdAt": "2022-06-16T16:52:06.175Z",
+            "updatedAt": "2022-06-16T16:52:06.175Z"
+        }
+        {
+            "id": "2e9ca982-6cbe-48a7-96f5-1893bcc70f00",
+            "type": "aws",
+            "displayName": "CJL-terraform-providerFri Jan 06 2023 14:04:46 GMT-0700 (Mountain Standard Time)",
+            "description": "",
+            "details": {
+                "polling": {
+                    "interval": 5,
+                    "unit": "minute"
+                },
+                "services": [
+                    {
+                        "name": "ec2",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "elb",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "ebs",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "rds",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    },
+                    {
+                        "name": "ecs",
+                        "polling": {
+                            "interval": 5,
+                            "unit": "minute"
+                        },
+                        "tagFilter": ""
+                    }
+                ],
+                "importTags": {
+                    "enabled": true,
+                    "excludedKeys": []
+                },
+                "regions": [],
+                "tagFilter": ""
+            },
+            "createdAt": "2023-01-06T21:04:47.139Z",
+            "updatedAt": "2023-01-06T21:04:47.139Z"
+        }
+    ]
+}

@@ -1,0 +1,145 @@
+{
+    "items": [
+        {
+            "id": "3d809a20-d614-41db-86c6-5dbeaff3186d",
+            "createdAt": "2022-07-07T00:24:40.645Z",
+            "updatedAt": "2022-07-18T19:26:20.634Z",
+            "displayName": "jasulli2-aws-lab",
+            "description": "test",
+            "type": "aws",
+            "state": "ACTIVE",
+            "stateMessage": "[{\"service\":\"rds\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"ec2\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"ebs\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"VPC\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"elb\",\"statusMessage\":\"Successful Collection\"}]",
+            "details": {
+                "accountId": "869280000980",
+                "externalId": "544637ec-38d7-4057-aabe-aa301f6172eb",
+                "roleName": "AppDMonitoringRole_jasulli2",
+                "accessType": "role_delegation",
+                "appDynamicsAwsAccountId": "932519523259"
+            },
+            "configurationId": "62ed0741-0615-4169-9947-2913d6ce8237"
+        },
+        {
+            "id": "dea35291-4ad0-4f6f-9b80-6bb57888674a",
+            "createdAt": "2022-07-07T08:46:52.503Z",
+            "updatedAt": "2022-08-15T09:41:47.095Z",
+            "displayName": "labs-samchapman",
+            "description": "",
+            "type": "aws",
+            "state": "INACTIVE",
+            "stateMessage": "Connection is disabled by the user.",
+            "details": {
+                "accountId": "538505507259",
+                "externalId": "39c35681-9765-483b-962c-0a0d72347471",
+                "roleName": "AppDynamicsMonitoringRole",
+                "accessType": "role_delegation",
+                "appDynamicsAwsAccountId": "932519523259"
+            },
+            "configurationId": "c36dc1a2-b5fa-4e7f-9806-b080a3e43d58"
+        },
+        {
+            "id": "af052ba0-4ab6-4a2f-9304-92b08760bd50",
+            "createdAt": "2022-07-08T16:35:57.090Z",
+            "updatedAt": "2022-12-05T15:32:34.281Z",
+            "displayName": "AppD Cloud Channel SE - Azure",
+            "description": "AppD Cloud Channel SE",
+            "type": "azure",
+            "state": "ACTIVE",
+            "stateMessage": "[{\"service\":\"azure_ip\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"azure_virtualmachines_scalesets_instances\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"azure_virtualmachines\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"azure_diskstorage\",\"statusMessage\":\"Successful Collection\"},{\"service\":\"azure_loadbalancers\",\"statusMessage\":\"Successful Collection\"}]",
+            "details": {
+                "clientId": "55357cb3-bbb5-4fd1-a2a8-61c971513005",
+                "clientSecret": "*******************",
+                "tenantId": "f0705e98-bb08-4271-a963-a72b0f248254",
+                "subscriptionId": "b8d08f39-3950-4c72-9c2e-71491e10ccf6"
+            },
+            "configurationId": "d7e6a0d9-f51a-49d5-93ec-42e36815766d"
+        },
+        {
+            "id": "2d081d3b-42a8-45b7-8ae9-85ee524ac2ce",
+            "createdAt": "2022-12-17T08:25:57.669Z",
+            "updatedAt": "2022-12-17T08:26:14.861Z",
+            "displayName": "azure-vyblov",
+            "description": "",
+            "type": "azure",
+            "state": "WARNING",
+            "stateMessage": "An error occurred but AppDynamics is still collecting data from certain services. Review error details: [{\"service\":\"azure_sql_server\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_sql_server\"},{\"service\":\"azure_ip\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_ip\"},{\"service\":\"azure_virtualmachines_scalesets_instances\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_virtualmachines_scalesets_instances\"},{\"service\":\"azure_diskstorage\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_diskstorage\"},{\"service\":\"azure_virtualmachines\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_virtualmachines\"},{\"service\":\"azure_sql_db\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_sql_db\"},{\"service\":\"azure_databases_postgresql\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_databases_postgresql\"},{\"service\":\"azure_loadbalancers\",\"statusMessage\":\"Unexpected error encountered while executing collector for service: azure_loadbalancers\"}]",
+            "details": {
+                "clientId": "5b4014e3-a2c5-430b-87d2-7149aebcc940",
+                "clientSecret": "*******************",
+                "tenantId": "fd1fbf9f-991a-40b4-ae26-61dfc34421ef",
+                "subscriptionId": "c460cd3f-7c2a-48cc-9f5d-b62d6083ec23"
+            },
+            "configurationId": "d59d9b40-9108-4eaf-b338-8bdce39227e0"
+        },
+        {
+            "id": "6cb65b8e-2cf7-43e9-b8a1-7b35be2f484e",
+            "createdAt": "2022-12-20T02:05:06.973Z",
+            "updatedAt": "2022-12-20T04:21:58.339Z",
+            "displayName": "elyyu_EKSLabs",
+            "description": "AppDynamicsCloudMonitoringRole",
+            "type": "aws",
+            "state": "CONFIGURED",
+            "stateMessage": "Start the connection to begin collecting data.",
+            "details": {
+                "accountId": "263472222557",
+                "externalId": "7e24525d-0c00-491d-8f18-000bbc84e1cd",
+                "roleName": "AppDynamicsMonitoringRole",
+                "accessType": "role_delegation",
+                "appDynamicsAwsAccountId": "932519523259"
+            },
+            "configurationId": "9689091c-ed22-4ed3-979f-6ab0f5da457e"
+        },
+        {
+            "id": "e1f94437-2f1a-44a0-85d5-286ffd942773",
+            "createdAt": "2022-12-20T12:46:18.006Z",
+            "updatedAt": "2022-12-20T12:52:44.947Z",
+            "displayName": "lciukaj-aws-connection",
+            "description": "lciukaj-aws-connection",
+            "type": "aws",
+            "state": "ERROR",
+            "stateMessage": "AppDynamics is unable to collect data. Review error details to resolve, then resume the connection. [{\"service\":\"AWS/EC2\",\"statusMessage\":\"Insufficient Permissions\\n\"},{\"service\":\"AWS/EBS\",\"statusMessage\":\"Insufficient Permissions\\n\"},{\"service\":\"AWS/ELB\",\"statusMessage\":\"Insufficient Permissions\\n\"},{\"service\":\"AWS/RDS\",\"statusMessage\":\"Insufficient Permissions\\n\"}]",
+            "details": {
+                "accountId": "841950480758",
+                "externalId": "08f0b0c2-8d23-4aec-95cd-06757c82f1a8",
+                "roleName": "AppDynamicsMonitoringRole2",
+                "accessType": "role_delegation",
+                "appDynamicsAwsAccountId": "932519523259"
+            },
+            "configurationId": "9d0141f2-111a-4ffd-ade2-a6cad1f3959b"
+        },
+        {
+            "id": "48226f58-891c-41f3-98da-ff9a28a88ac4",
+            "createdAt": "2022-12-20T13:24:24.151Z",
+            "updatedAt": "2022-12-20T13:56:21.527Z",
+            "displayName": "ivalba-eks",
+            "description": "",
+            "type": "aws",
+            "state": "ERROR",
+            "stateMessage": "AppDynamics is unable to collect data. Review error details to resolve, then resume the connection. [{\"service\":\"AWS/EC2\",\"statusMessage\":\"Incorrect Credentials\\n\"},{\"service\":\"AWS/EBS\",\"statusMessage\":\"Incorrect Credentials\\n\"},{\"service\":\"AWS/ELB\",\"statusMessage\":\"Incorrect Credentials\\n\"},{\"service\":\"AWS/RDS\",\"statusMessage\":\"Incorrect Credentials\\n\"}]",
+            "details": {
+                "accountId": "029159875775",
+                "externalId": "ffd4b5c4-a3a7-4b15-9904-8d99d93c332d",
+                "roleName": "AppDynamicsMonitoringRole",
+                "accessType": "role_delegation",
+                "appDynamicsAwsAccountId": "932519523259"
+            },
+            "configurationId": "868ca8b9-b54d-4d8a-91fd-426adc608ef4"
+        },
+        {
+            "id": "c1f08f07-a609-4691-beba-39e055c652b2",
+            "createdAt": "2023-01-02T22:49:29.264Z",
+            "updatedAt": "2023-01-02T22:49:29.264Z",
+            "displayName": "CJL-terraform-provider",
+            "description": "",
+            "type": "aws",
+            "state": "INCOMPLETE",
+            "stateMessage": "Please enter a role name to connect.",
+            "details": {
+                "accountId": "361863697511",
+                "externalId": "94b55d75-d060-407f-a0a6-987da9627910",
+                "accessType": "role_delegation",
+                "appDynamicsAwsAccountId": "932519523259"
+            },
+            "configurationId": ""
+        }
+    ]
+}
