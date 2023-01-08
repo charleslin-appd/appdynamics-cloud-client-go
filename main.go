@@ -32,14 +32,14 @@ func main() {
 	auth := context.WithValue(context.Background(), appdcloudconnection_v1.ContextOAuth2, token)
 
 	apiConfiguration := appdcloudconnection_v1.NewConfiguration()
-	// Assign the Configures's HTTPClient to credential client, otherwise
+	// Assign the Configures's HTTPClient to credential client with the token source, otherwise
 	// it will default to the DefaultClient
 	apiConfiguration.HTTPClient = ccConfig.Client(auth)
 	// Create the API client with the configuration
 	client := appdcloudconnection_v1.NewAPIClient(apiConfiguration)
 
 	// make the call
-	resp, httpRes, err := client.ConnectionsApi.GetConnections(auth, nil)
+	resp, httpRes, err := client.ConnectionsApi.GetConnections(context.Background(), nil)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
