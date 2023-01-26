@@ -1,0 +1,1747 @@
+openapi: 3.0.3
+info:
+  title: AppDynamics Cloud Query Service API
+  description: |-
+    An API providing access to observation data using an AppDynamics domain-specific language.
+
+    The language is declarative, read-only (it does not allow for data modification) and specific to the AppD MELT model.
+    It presents MELT data (metrics, events, logs, traces) and State in the scope of monitored topology.
+  license:
+    name: AppDynamics
+    url: https://www.appdynamics.com
+  version: "1.0"
+servers:
+- url: "https://{tenant-name}.observe.appdynamics.com/monitoring/v1"
+  description: Production environment
+  variables:
+    tenant-name:
+      description: Tenant name
+      default: customer1
+tags:
+- name: ExecuteQuery
+- name: ResultPagination
+paths:
+  /query/execute:
+    post:
+      tags:
+      - ExecuteQuery
+      summary: Execute a query to fetch observation data.
+      description: Execute a query to fetch observation data.
+      operationId: executeQuery
+      requestBody:
+        description: A simple JSON object containing a query string.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequestBody'
+            examples:
+              Execute a query:
+                description: Execute a simple query.
+                value:
+                  query: "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time)\
+                    \ {source, timestamp, min, max} from entities(apm:service)[attributes(service.namespace)\
+                    \ = 'Levitate'].out.to(apm:service_instance) since -3h"
+      responses:
+        "200":
+          description: |-
+            The API returns a chunked response with a sequence of objects. The first object describes the model of the returned data.
+            The model is followed by a series of datasets of actual values or error objects indicating problems during query execution.
+          headers:
+            transfer-encoding:
+              description: chunked
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponseArrayBody'
+              examples:
+                Response as a JSON array:
+                  value: |-
+                    [
+                      {
+                        "type": "model",
+                        "model": {
+                          "name": "m:main",
+                          "fields": [
+                            {
+                              "alias": "id",
+                              "type": "string",
+                              "hints": {
+                                "kind": "entity",
+                                "field": "id",
+                                "type": "apm:service_instance"
+                              }
+                            },
+                            {
+                              "alias": "name",
+                              "type": "string",
+                              "hints": {}
+                            },
+                            {
+                              "alias": "cpm",
+                              "type": "complex",
+                              "hints": {
+                                "kind": "metric",
+                                "type": "apm:response_time"
+                              },
+                              "form": "reference",
+                              "model": {
+                                "name": "m:cpm",
+                                "fields": [
+                                  {
+                                    "alias": "source",
+                                    "type": "string",
+                                    "hints": {
+                                      "kind": "metric",
+                                      "field": "source",
+                                      "type": "apm:response_time"
+                                    }
+                                  },
+                                  {
+                                    "alias": "cpm",
+                                    "type": "timeseries",
+                                    "hints": {
+                                      "kind": "metric",
+                                      "type": "apm:response_time"
+                                    },
+                                    "form": "inline",
+                                    "model": {
+                                      "name": "m:cpm_2",
+                                      "fields": [
+                                        {
+                                          "alias": "timestamp",
+                                          "type": "timestamp",
+                                          "hints": {
+                                            "kind": "metric",
+                                            "field": "timestamp",
+                                            "type": "apm:response_time"
+                                          }
+                                        },
+                                        {
+                                          "alias": "min",
+                                          "type": "number",
+                                          "hints": {
+                                            "kind": "metric",
+                                            "field": "min",
+                                            "type": "apm:response_time"
+                                          }
+                                        },
+                                        {
+                                          "alias": "max",
+                                          "type": "number",
+                                          "hints": {
+                                            "kind": "metric",
+                                            "field": "max",
+                                            "type": "apm:response_time"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "data",
+                        "model": {
+                          "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:main')]",
+                          "$model": "m:main"
+                        },
+                        "metadata": {
+                          "since": "2022-06-14T09:21:18.143353Z",
+                          "until": "2022-06-17T09:21:18.143353Z"
+                        },
+                        "dataset": "d:main",
+                        "data": [
+                          [
+                            "apm:service_instance:QkYwm51nMAeUADsp4uY6NA",
+                            "Query Service",
+                            {
+                              "$dataset": "d:metrics-1",
+                              "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-1')]"
+                            }
+                          ]
+                        ]
+                      },
+                      {
+                        "type": "heartbeat"
+                      },
+                      {
+                        "type": "data",
+                        "model": {
+                          "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:cpm')]",
+                          "$model": "m:cpm"
+                        },
+                        "metadata": {
+                          "granularitySeconds": 60
+                        },
+                        "dataset": "d:metrics-1",
+                        "data": [
+                          [
+                            "sys:derived",
+                            [
+                              [
+                                "2022-06-16T10:00Z",
+                                470995,
+                                53246567
+                              ],
+                              [
+                                "2022-06-16T11:00Z",
+                                460153,
+                                94186816
+                              ],
+                              [
+                                "2022-06-16T12:00Z",
+                                460708,
+                                81749730
+                              ]
+                            ]
+                          ]
+                        ]
+                      },
+                      {
+                        "type": "error",
+                        "error": {
+                          "timestamp": "2022-06-17T09:29:52.578280Z",
+                          "errorCode": "MS-001",
+                          "title": "General Error",
+                          "detail": "Metric data error (logged with TraceId: [cb7d28a9c4cb41cb88f90db48149d78d], SpanId: [c5937a4300964f2f])",
+                          "traceId": "cb7d28a9c4cb41cb88f90db48149d78d",
+                          "tenantId": "0baa5ce3-b54c-4153-b902-1208262aa3e1",
+                          "query": "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time) {source, timestamp, min, max} from entities(apm:service)[attributes(service.namespace) = 'Levitate'].out.to(apm:service_instance) since -3h"
+                        }
+                      }
+                    ]
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+              examples:
+                (Part 1) Streamed JSON response as a sequence of newline-delimited JSON objects:
+                  description: |-
+                    Each object is printed on a single line delimited by ASCII control character `\n`.
+                    JSON objects in the example are indented for better readability.
+                  value: |-
+                    {
+                      "type": "model",
+                      "model": {
+                        "name": "m:main",
+                        "fields": [
+                          {
+                            "alias": "id",
+                            "type": "string",
+                            "hints": {
+                              "kind": "entity",
+                              "field": "id",
+                              "type": "apm:service_instance"
+                            }
+                          },
+                          {
+                            "alias": "name",
+                            "type": "string",
+                            "hints": {}
+                          },
+                          {
+                            "alias": "cpm",
+                            "type": "complex",
+                            "hints": {
+                              "kind": "metric",
+                              "type": "apm:response_time"
+                            },
+                            "form": "reference",
+                            "model": {
+                              "name": "m:cpm",
+                              "fields": [
+                                {
+                                  "alias": "source",
+                                  "type": "string",
+                                  "hints": {
+                                    "kind": "metric",
+                                    "field": "source",
+                                    "type": "apm:response_time"
+                                  }
+                                },
+                                {
+                                  "alias": "cpm",
+                                  "type": "timeseries",
+                                  "hints": {
+                                    "kind": "metric",
+                                    "type": "apm:response_time"
+                                  },
+                                  "form": "inline",
+                                  "model": {
+                                    "name": "m:cpm_2",
+                                    "fields": [
+                                      {
+                                        "alias": "timestamp",
+                                        "type": "timestamp",
+                                        "hints": {
+                                          "kind": "metric",
+                                          "field": "timestamp",
+                                          "type": "apm:response_time"
+                                        }
+                                      },
+                                      {
+                                        "alias": "min",
+                                        "type": "number",
+                                        "hints": {
+                                          "kind": "metric",
+                                          "field": "min",
+                                          "type": "apm:response_time"
+                                        }
+                                      },
+                                      {
+                                        "alias": "max",
+                                        "type": "number",
+                                        "hints": {
+                                          "kind": "metric",
+                                          "field": "max",
+                                          "type": "apm:response_time"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                (Part 2) Directly followed by next object in the body (Objects are not in an array):
+                  description: |-
+                    A chunk of type <em>data</em> might contain a pagination <em>_links</em> element which when followed will retrieve the next page of results.
+                    The example given below is fictitious and does not represent a valid cursor.
+                  value: |-
+                    {
+                      "type": "data",
+                      "model": {
+                        "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:main')]",
+                        "$model": "m:main"
+                      },
+                      "metadata": {
+                        "since": "2022-06-14T09:21:18.143353Z",
+                        "until": "2022-06-17T09:21:18.143353Z"
+                      },
+                      "dataset": "d:main",
+                      "_links": {
+                        "next": {
+                          "href": "/monitoring/v1/query/continue?cursor=ewogICJza2lwIiA6IDEsCiAgInF1ZXJ5IiA6ICJmZXRjaCBpZDogaWQsIG5hbWU6IG"
+                        }
+                      },
+                      "data": [
+                        [
+                          "apm:service_instance:QkYwm51nMAeUADsp4uY6NA",
+                          "Query Service",
+                          {
+                            "$dataset": "d:metrics-1",
+                            "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-1')]"
+                          }
+                        ],
+                        [
+                          "apm:service_instance:4Qb9EQ9QOHKcSA1l6w5ncQ",
+                          "Query Service",
+                          {
+                            "$dataset": "d:metrics-2",
+                            "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-2')]"
+                          }
+                        ]
+                      ]
+                    }
+                (Part 3) Datasets might be referenced from other datasets and might contain nested timeseries.:
+                  value: |-
+                    {
+                      "type": "data",
+                      "model": {
+                        "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:cpm')]",
+                        "$model": "m:cpm"
+                      },
+                      "metadata": {
+                        "granularitySeconds": 60
+                      },
+                      "dataset": "d:metrics-1",
+                      "data": [
+                        [
+                          "sys:derived",
+                          [
+                            [
+                              "2022-06-16T10:00Z",
+                              470995,
+                              53246567
+                            ],
+                            [
+                              "2022-06-16T11:00Z",
+                              460153,
+                              94186816
+                            ],
+                            [
+                              "2022-06-16T12:00Z",
+                              460708,
+                              81749730
+                            ]
+                          ]
+                        ]
+                      ]
+                    }
+                (Part 4) Possibly an error:
+                  value: |-
+                    {
+                      "type": "error",
+                      "error": {
+                        "timestamp": "2022-06-17T09:29:52.578280Z",
+                        "errorCode": "MS-001",
+                        "title": "General Error",
+                        "detail": "Metric data error (logged with TraceId: [cb7d28a9c4cb41cb88f90db48149d78d], SpanId: [c5937a4300964f2f])",
+                        "traceId": "cb7d28a9c4cb41cb88f90db48149d78d",
+                        "tenantId": "0baa5ce3-b54c-4153-b902-1208262aa3e1",
+                        "query": "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time) {source, timestamp, min, max} from entities(apm:service)[attributes(service.namespace) = 'Levitate'].out.to(apm:service_instance) since -3h"
+                      }
+                    }
+                (Part 5) Heartbeat if needed to make sure the connection is kept alive:
+                  value: |-
+                    {
+                      "type": "heartbeat"
+                    }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: https://developer.cisco.com/docs/appdynamics/errors/#!input-validation
+                timestamp: 2020-02-22T11:22:33.980629Z
+                traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+                title: Query compilation failure!
+                detail: Unable to compile due to query semantic errors.
+                tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+                query: fetch id from (apm:serviceX)
+                compilationErrors:
+                - message: Unknown alias 'id'
+                  fixSuggestion: ""
+                  fixPossibilities: []
+                  errorType: SEMANTIC
+                  errorFrom: 1:6
+                  errorTo: 1:7
+                - message: "Referenced topology set has errors: 1:23-1:34"
+                  fixPossibilities: []
+                  errorType: SEMANTIC
+                  errorFrom: 1:6
+                  errorTo: 1:7
+                - message: No Type found in the Schema for apm:serviceX with any specified
+                    namespace or namespace common if none was specified
+                  fixSuggestion: Did you mean 'apm:service'?
+                  fixPossibilities:
+                  - apm:service
+                  - apm:service_endpoint
+                  - apm:service_instance
+                  errorType: SEMANTIC
+                  errorFrom: 1:23
+                  errorTo: 1:34
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: https://developer.cisco.com/docs/appdynamics/errors/#!internal-server-error
+                timestamp: 2020-02-22T11:22:33.980629Z
+                traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+                title: Internal Server Error
+                detail: Unexpected error happened (logged as 224397de-5843-4954-b092-37c84aead3c9)
+                tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+                query: fetch id from entities since 2022-06-02 until 2022-06-01
+        "503":
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: https://developer.cisco.com/docs/appdynamics/errors/#!internal-server-error
+                timestamp: 2020-02-22T11:22:33.980629Z
+                traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+                title: Service Unavailable
+                detail: Unexpected error happened (logged as 224397de-5843-4954-b092-37c84aead3c9)
+                tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+                query: fetch id from entities since 2022-06-02 until 2022-06-01
+  /query/continue:
+    get:
+      tags:
+      - ResultPagination
+      summary: Fetch the next page of results.
+      description: Fetch the next page of results.
+      operationId: resultPagination
+      parameters:
+      - name: cursor
+        in: query
+        description: An opaque string which will allow the retrieval of the next page
+          of results. The cursor is obtained from a previous query response.
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: ewogICJza2lwIiA6IDEwMDAsCiAgInF1ZXJ5IiA6ICJGRVRDSFxuICAgIGlkLFxuICAgIGhlYWx0aF9hc19
+      responses:
+        "200":
+          description: |-
+            The API returns a chunked response with a sequence of objects. The first object describes the model of the returned data.
+            The model is followed by a series of datasets of actual values or error objects indicating problems during query execution.
+          headers:
+            transfer-encoding:
+              description: chunked
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponseArrayBody'
+              examples:
+                Response as a JSON array:
+                  value: |-
+                    [
+                      {
+                        "type": "model",
+                        "model": {
+                          "name": "m:main",
+                          "fields": [
+                            {
+                              "alias": "id",
+                              "type": "string",
+                              "hints": {
+                                "kind": "entity",
+                                "field": "id",
+                                "type": "apm:service_instance"
+                              }
+                            },
+                            {
+                              "alias": "name",
+                              "type": "string",
+                              "hints": {}
+                            },
+                            {
+                              "alias": "cpm",
+                              "type": "complex",
+                              "hints": {
+                                "kind": "metric",
+                                "type": "apm:response_time"
+                              },
+                              "form": "reference",
+                              "model": {
+                                "name": "m:cpm",
+                                "fields": [
+                                  {
+                                    "alias": "source",
+                                    "type": "string",
+                                    "hints": {
+                                      "kind": "metric",
+                                      "field": "source",
+                                      "type": "apm:response_time"
+                                    }
+                                  },
+                                  {
+                                    "alias": "cpm",
+                                    "type": "timeseries",
+                                    "hints": {
+                                      "kind": "metric",
+                                      "type": "apm:response_time"
+                                    },
+                                    "form": "inline",
+                                    "model": {
+                                      "name": "m:cpm_2",
+                                      "fields": [
+                                        {
+                                          "alias": "timestamp",
+                                          "type": "timestamp",
+                                          "hints": {
+                                            "kind": "metric",
+                                            "field": "timestamp",
+                                            "type": "apm:response_time"
+                                          }
+                                        },
+                                        {
+                                          "alias": "min",
+                                          "type": "number",
+                                          "hints": {
+                                            "kind": "metric",
+                                            "field": "min",
+                                            "type": "apm:response_time"
+                                          }
+                                        },
+                                        {
+                                          "alias": "max",
+                                          "type": "number",
+                                          "hints": {
+                                            "kind": "metric",
+                                            "field": "max",
+                                            "type": "apm:response_time"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "data",
+                        "model": {
+                          "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:main')]",
+                          "$model": "m:main"
+                        },
+                        "metadata": {
+                          "since": "2022-06-14T09:21:18.143353Z",
+                          "until": "2022-06-17T09:21:18.143353Z"
+                        },
+                        "dataset": "d:main",
+                        "data": [
+                          [
+                            "apm:service_instance:QkYwm51nMAeUADsp4uY6NA",
+                            "Query Service",
+                            {
+                              "$dataset": "d:metrics-1",
+                              "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-1')]"
+                            }
+                          ]
+                        ]
+                      },
+                      {
+                        "type": "heartbeat"
+                      },
+                      {
+                        "type": "data",
+                        "model": {
+                          "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:cpm')]",
+                          "$model": "m:cpm"
+                        },
+                        "metadata": {
+                          "granularitySeconds": 60
+                        },
+                        "dataset": "d:metrics-1",
+                        "data": [
+                          [
+                            "sys:derived",
+                            [
+                              [
+                                "2022-06-16T10:00Z",
+                                470995,
+                                53246567
+                              ],
+                              [
+                                "2022-06-16T11:00Z",
+                                460153,
+                                94186816
+                              ],
+                              [
+                                "2022-06-16T12:00Z",
+                                460708,
+                                81749730
+                              ]
+                            ]
+                          ]
+                        ]
+                      },
+                      {
+                        "type": "error",
+                        "error": {
+                          "timestamp": "2022-06-17T09:29:52.578280Z",
+                          "errorCode": "MS-001",
+                          "title": "General Error",
+                          "detail": "Metric data error (logged with TraceId: [cb7d28a9c4cb41cb88f90db48149d78d], SpanId: [c5937a4300964f2f])",
+                          "traceId": "cb7d28a9c4cb41cb88f90db48149d78d",
+                          "tenantId": "0baa5ce3-b54c-4153-b902-1208262aa3e1",
+                          "query": "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time) {source, timestamp, min, max} from entities(apm:service)[attributes(service.namespace) = 'Levitate'].out.to(apm:service_instance) since -3h"
+                        }
+                      }
+                    ]
+            application/x-ndjson:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+              examples:
+                (Part 1) Streamed JSON response as a sequence of newline-delimited JSON objects:
+                  description: |-
+                    Each object is printed on a single line delimited by ASCII control character `\n`.
+                    JSON objects in the example are indented for better readability.
+                  value: |-
+                    {
+                      "type": "model",
+                      "model": {
+                        "name": "m:main",
+                        "fields": [
+                          {
+                            "alias": "id",
+                            "type": "string",
+                            "hints": {
+                              "kind": "entity",
+                              "field": "id",
+                              "type": "apm:service_instance"
+                            }
+                          },
+                          {
+                            "alias": "name",
+                            "type": "string",
+                            "hints": {}
+                          },
+                          {
+                            "alias": "cpm",
+                            "type": "complex",
+                            "hints": {
+                              "kind": "metric",
+                              "type": "apm:response_time"
+                            },
+                            "form": "reference",
+                            "model": {
+                              "name": "m:cpm",
+                              "fields": [
+                                {
+                                  "alias": "source",
+                                  "type": "string",
+                                  "hints": {
+                                    "kind": "metric",
+                                    "field": "source",
+                                    "type": "apm:response_time"
+                                  }
+                                },
+                                {
+                                  "alias": "cpm",
+                                  "type": "timeseries",
+                                  "hints": {
+                                    "kind": "metric",
+                                    "type": "apm:response_time"
+                                  },
+                                  "form": "inline",
+                                  "model": {
+                                    "name": "m:cpm_2",
+                                    "fields": [
+                                      {
+                                        "alias": "timestamp",
+                                        "type": "timestamp",
+                                        "hints": {
+                                          "kind": "metric",
+                                          "field": "timestamp",
+                                          "type": "apm:response_time"
+                                        }
+                                      },
+                                      {
+                                        "alias": "min",
+                                        "type": "number",
+                                        "hints": {
+                                          "kind": "metric",
+                                          "field": "min",
+                                          "type": "apm:response_time"
+                                        }
+                                      },
+                                      {
+                                        "alias": "max",
+                                        "type": "number",
+                                        "hints": {
+                                          "kind": "metric",
+                                          "field": "max",
+                                          "type": "apm:response_time"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                (Part 2) Directly followed by next object in the body (Objects are not in an array):
+                  description: |-
+                    A chunk of type <em>data</em> might contain a pagination <em>_links</em> element which when followed will retrieve the next page of results.
+                    The example given below is fictitious and does not represent a valid cursor.
+                  value: |-
+                    {
+                      "type": "data",
+                      "model": {
+                        "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:main')]",
+                        "$model": "m:main"
+                      },
+                      "metadata": {
+                        "since": "2022-06-14T09:21:18.143353Z",
+                        "until": "2022-06-17T09:21:18.143353Z"
+                      },
+                      "dataset": "d:main",
+                      "_links": {
+                        "next": {
+                          "href": "/monitoring/v1/query/continue?cursor=ewogICJza2lwIiA6IDEsCiAgInF1ZXJ5IiA6ICJmZXRjaCBpZDogaWQsIG5hbWU6IG"
+                        }
+                      },
+                      "data": [
+                        [
+                          "apm:service_instance:QkYwm51nMAeUADsp4uY6NA",
+                          "Query Service",
+                          {
+                            "$dataset": "d:metrics-1",
+                            "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-1')]"
+                          }
+                        ],
+                        [
+                          "apm:service_instance:4Qb9EQ9QOHKcSA1l6w5ncQ",
+                          "Query Service",
+                          {
+                            "$dataset": "d:metrics-2",
+                            "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-2')]"
+                          }
+                        ]
+                      ]
+                    }
+                (Part 3) Datasets might be referenced from other datasets and might contain nested timeseries.:
+                  value: |-
+                    {
+                      "type": "data",
+                      "model": {
+                        "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:cpm')]",
+                        "$model": "m:cpm"
+                      },
+                      "metadata": {
+                        "granularitySeconds": 60
+                      },
+                      "dataset": "d:metrics-1",
+                      "data": [
+                        [
+                          "sys:derived",
+                          [
+                            [
+                              "2022-06-16T10:00Z",
+                              470995,
+                              53246567
+                            ],
+                            [
+                              "2022-06-16T11:00Z",
+                              460153,
+                              94186816
+                            ],
+                            [
+                              "2022-06-16T12:00Z",
+                              460708,
+                              81749730
+                            ]
+                          ]
+                        ]
+                      ]
+                    }
+                (Part 4) Possibly an error:
+                  value: |-
+                    {
+                      "type": "error",
+                      "error": {
+                        "timestamp": "2022-06-17T09:29:52.578280Z",
+                        "errorCode": "MS-001",
+                        "title": "General Error",
+                        "detail": "Metric data error (logged with TraceId: [cb7d28a9c4cb41cb88f90db48149d78d], SpanId: [c5937a4300964f2f])",
+                        "traceId": "cb7d28a9c4cb41cb88f90db48149d78d",
+                        "tenantId": "0baa5ce3-b54c-4153-b902-1208262aa3e1",
+                        "query": "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time) {source, timestamp, min, max} from entities(apm:service)[attributes(service.namespace) = 'Levitate'].out.to(apm:service_instance) since -3h"
+                      }
+                    }
+                (Part 5) Heartbeat if needed to make sure the connection is kept alive:
+                  value: |-
+                    {
+                      "type": "heartbeat"
+                    }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: https://developer.cisco.com/docs/appdynamics/errors/#!input-validation
+                timestamp: 2020-02-22T11:22:33.980629Z
+                traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+                title: Query compilation failure!
+                detail: Unable to compile due to query semantic errors.
+                tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+                query: fetch id from (apm:serviceX)
+                compilationErrors:
+                - message: Unknown alias 'id'
+                  fixSuggestion: ""
+                  fixPossibilities: []
+                  errorType: SEMANTIC
+                  errorFrom: 1:6
+                  errorTo: 1:7
+                - message: "Referenced topology set has errors: 1:23-1:34"
+                  fixPossibilities: []
+                  errorType: SEMANTIC
+                  errorFrom: 1:6
+                  errorTo: 1:7
+                - message: No Type found in the Schema for apm:serviceX with any specified
+                    namespace or namespace common if none was specified
+                  fixSuggestion: Did you mean 'apm:service'?
+                  fixPossibilities:
+                  - apm:service
+                  - apm:service_endpoint
+                  - apm:service_instance
+                  errorType: SEMANTIC
+                  errorFrom: 1:23
+                  errorTo: 1:34
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: https://developer.cisco.com/docs/appdynamics/errors/#!internal-server-error
+                timestamp: 2020-02-22T11:22:33.980629Z
+                traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+                title: Internal Server Error
+                detail: Unexpected error happened (logged as 224397de-5843-4954-b092-37c84aead3c9)
+                tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+                query: fetch id from entities since 2022-06-02 until 2022-06-01
+        "503":
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+              example:
+                type: https://developer.cisco.com/docs/appdynamics/errors/#!internal-server-error
+                timestamp: 2020-02-22T11:22:33.980629Z
+                traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+                title: Service Unavailable
+                detail: Unexpected error happened (logged as 224397de-5843-4954-b092-37c84aead3c9)
+                tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+                query: fetch id from entities since 2022-06-02 until 2022-06-01
+components:
+  schemas:
+    QueryRequestBody:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Query string.
+      description: Client request with a query.
+    QueryResponseArrayBody:
+      type: array
+      description: "The ModelResultChunk will be always the first item in the response\
+        \ array. The rest of the items might be a mix of DataResultChunk, ErrorResultChunk\
+        \ and HeartbeatResultChunk"
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/ModelResultChunk'
+        - $ref: '#/components/schemas/DataResultChunk'
+        - $ref: '#/components/schemas/ErrorResultChunk'
+        - $ref: '#/components/schemas/HeartbeatResultChunk'
+    ModelResultChunk:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Attribute identifying a response chunk as holding the response
+            model.
+          example: model
+          enum:
+          - model
+        model:
+          $ref: '#/components/schemas/Model'
+      description: A schema of the data to follow. This object can only be at the
+        first position in the response.
+    DataResultChunk:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Attribute identifying a response chunk holding data.
+          example: data
+          enum:
+          - data
+        _links:
+          $ref: '#/components/schemas/PaginationReference'
+        dataset:
+          type: string
+          description: Name of the dataset. May be used as a reference in other datasets
+            when returning multi dimensional data.
+        model:
+          $ref: '#/components/schemas/ModelReference'
+        metadata:
+          $ref: '#/components/schemas/MetadataResultItem'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataResultItem'
+      description: A part of the result data. There may be multiple chunks of this
+        type in the response.
+    ErrorResultChunk:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Attribute identifying a response chunk as holding information
+            of an error.
+          example: error
+          enum:
+          - error
+        error:
+          $ref: '#/components/schemas/ErrorResultChunk_error'
+      description: A signal that an error occurred during query execution.
+    HeartbeatResultChunk:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Attribute identifying a response chunk as a heartbeat.
+          example: heartbeat
+          enum:
+          - heartbeat
+      description: An empty chunk sent to prevent the HTTP connection from being pre-maturely
+        closed.
+    ModelResultItem:
+      type: object
+      properties:
+        alias:
+          type: string
+        type:
+          type: string
+          description: Specifies a type of the value in the JSON response.
+          example: "'string', 'number', 'timestamp', ..."
+        hints:
+          $ref: '#/components/schemas/Hints'
+      description: A description of a simple data type of a single fetched expression
+        in the result.
+    ComplexModelResultItem:
+      type: object
+      properties:
+        alias:
+          type: string
+        type:
+          type: string
+          description: Specifies a type of the complex value. Individual fields are
+            described in the 'model'.
+          example: "'complex', 'timeseries' specifically for time series."
+        hints:
+          $ref: '#/components/schemas/Hints'
+        form:
+          type: string
+          description: "Describes where timeseries or complex objects are located\
+            \ in the response. Possible values are: inline, reference, link"
+        model:
+          $ref: '#/components/schemas/Model'
+      description: A description of a complex data type of a single fetched expression
+        in the result.
+    Model:
+      type: object
+      properties:
+        name:
+          type: string
+          description: This name will be used by the following DataResultChunks as
+            a reference to the description of their structure.
+        fields:
+          type: array
+          description: |-
+            An array of type descriptors for each fetched expression in the query.
+            The order of the array matches the order of values in the DataResultChunks with this schema model.'
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ModelResultItem'
+            - $ref: '#/components/schemas/ComplexModelResultItem'
+      description: A description of the schema of the data to follow in the DataResultChunks.
+    Hints:
+      type: object
+      properties:
+        kind:
+          type: string
+          description: |-
+            Type of observed component from AppD MELT Model.
+            Optional, if applicable
+          example: "'entity', 'metric', 'event', ..."
+        field:
+          type: string
+          description: "Name of the MELT model property mentioned in the 'kind' hint.\n\
+            See AppD MELT Model \nOptional, if applicable (for example not for expression)"
+          example: '''value'' when fetching a Property'
+        type:
+          type: string
+          description: Full name with namespace of the type.
+          example: apm:service
+      description: Additional information about a single fetched expression from the
+        query.
+    MetadataResultItem:
+      type: object
+      description: Additional information collected for the data contained in the
+        data chunk.
+      anyOf:
+      - $ref: '#/components/schemas/MainMetadataResultItem'
+      - $ref: '#/components/schemas/MetricMetadataResultItem'
+      - $ref: '#/components/schemas/EventMetadataResultItem'
+    MainMetadataResultItem:
+      type: object
+      properties:
+        since:
+          type: string
+          description: Specifies the start of the time range which was used for querying.
+          format: date-time
+          example: 2022-05-24T10:18:22.12Z
+        until:
+          type: string
+          description: Specifies the end of the time range which was used for querying.
+          format: date-time
+          example: 2022-05-24T11:18:22.12Z
+      description: Metadata for the main data chunk.
+    MetricMetadataResultItem:
+      type: object
+      properties:
+        granularitySeconds:
+          type: number
+          description: |-
+            Actual granularity of metric data points.
+            The value is the length of the time interval of a single data point.
+      description: Metadata for a metric data chunk.
+    EventMetadataResultItem:
+      type: object
+      properties:
+        schema:
+          type: object
+          description: Arbitrary map of keys and values associated with the event
+            data.
+        statistics:
+          type: object
+          description: Arbitrary map of statistics associated with the event data.
+      description: Metadata for an event data chunk.
+    DataResultItem:
+      type: array
+      description: A row of values with mixed data types based on the fetched expressions.
+      items:
+        anyOf:
+        - type: string
+        - type: integer
+        - type: number
+        - type: boolean
+        - $ref: '#/components/schemas/DatasetReference'
+        - type: object
+    DatasetReference:
+      type: object
+      properties:
+        $dataset:
+          type: string
+          description: Unique name of the dataset.
+          example: d:metrics-1
+        $jsonPath:
+          type: string
+          description: JSON Path that filters the correct dataset from the list of
+            all datasets.
+          example: "$..[?(@.type == 'data' && @.dataset == 'd:metrics-1')]"
+      description: A reference to a specific dataset.
+    PaginationReference:
+      type: object
+      properties:
+        next:
+          $ref: '#/components/schemas/PaginationReference_next'
+      description: A reference to the next page of results if there are more results
+        to be had.
+    ModelReference:
+      type: object
+      properties:
+        $model:
+          type: string
+          description: A unique model name.
+          example: m:main
+        $jsonPath:
+          type: string
+          description: JSON Path that filters the correct model from the ModelResultChunk.
+          example: "$..[?(@.type == 'model')]..[?(@.name == 'm:main')]"
+      description: A reference to a specific model.
+    ErrorResult:
+      required:
+      - detail
+      - query
+      - tenantId
+      - timestamp
+      - title
+      - traceId
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: URI to the documentation of the error.
+        errorCode:
+          type: string
+          description: The code of a error.
+          example: SC-001
+        timestamp:
+          type: string
+          description: Time and date the error occurred.
+          format: date-time
+          example: 2020-02-22T11:22:33.980629Z
+        traceId:
+          type: string
+          description: Id to correlate events and logs across dependent services for
+            a single query.
+          example: fc3decb4bf674b7cb16c5f208fb1f18b
+        title:
+          type: string
+          description: Brief description of the error.
+          example: Query compilation failure!
+        detail:
+          type: string
+          description: Usually a more detailed description of the error.
+          example: "Unable to compile due to query semantic errors. (logged with TraceId:\
+            \ [467345r43535e4246f9a895c44636076bf0], SpanId: [8c3345345b273d43])"
+        tenantId:
+          type: string
+          description: The id of a tenant for which the query was executed.
+          example: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+        query:
+          type: string
+          description: The input query.
+          example: fetch id from entities since 2022-06-02 until 2022-06-01
+        errorDetails:
+          $ref: '#/components/schemas/ErrorDetailsArray'
+      description: |-
+        A representation of an error that occurred during query execution. It contains at least brief a description
+        of the error and contextual information of the corresponding request.
+    ErrorDetailsArray:
+      type: array
+      description: An array containing the details of an error.
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/ErrorDetailItem'
+    ErrorDetailItem:
+      required:
+      - errorFrom
+      - errorTo
+      - errorType
+      - fixPossibilities
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+          description: A short description on error cause.
+          example: Unknown alias 'id'
+        fixSuggestion:
+          type: string
+          description: A hint to resolve the error.
+          example: Did you mean 'apm:service_endpoint'?
+        fixPossibilities:
+          type: array
+          description: A list of fix possibilities to resolve the error.
+          items:
+            anyOf:
+            - type: string
+              example: apm:backend
+        errorType:
+          type: string
+          description: The type of the error.
+          example: SEMANTIC
+          enum:
+          - SEMANTIC
+          - SYNTAX
+        errorFrom:
+          type: string
+          description: The start position of the error in format 'lineNum:charIdx'.
+          example: 1:6
+        errorTo:
+          type: string
+          description: The end position of the error in format 'lineNum:charIdx'.
+          example: 1:7
+      description: A detailed description of the error.
+    inline_response_200:
+      discriminator:
+        propertyName: type
+        mapping:
+          model: '#/components/schemas/ModelResultChunk'
+          data: '#/components/schemas/DataResultChunk'
+          error: '#/components/schemas/ErrorResultChunk'
+          heartbeat: '#/components/schemas/HeartbeatResultChunk'
+      anyOf:
+      - $ref: '#/components/schemas/ModelResultChunk'
+      - $ref: '#/components/schemas/DataResultChunk'
+      - $ref: '#/components/schemas/ErrorResultChunk'
+      - $ref: '#/components/schemas/HeartbeatResultChunk'
+    ErrorResultChunk_error:
+      type: object
+      properties:
+        type:
+          type: string
+          description: URI to the documentation of the error.
+          example: https://developer.cisco.com/docs/appdynamics/errors/#!internal-server-error
+        errorCode:
+          type: string
+          description: The code of the error.
+          example: SC-001
+        timestamp:
+          type: string
+          description: Time and date the `ErrorResultChunk` was created.
+          format: date-time
+          example: 2020-02-22T11:22:33.980629Z
+        traceId:
+          type: string
+          description: It correlates events and logs messages across dependent services
+            for single business transaction.
+          example: fc3decb4bf674b7cb16c5f208fb1f18b
+        title:
+          type: string
+          description: Brief description of the error.
+          example: Unexpected error happened
+        detail:
+          type: string
+          description: Usually more detailed description of the error.
+          example: Unexpected error happened (logged as 224397de-5843-4954-b092-37c84aead3c9)
+        query:
+          type: string
+          description: The input query.
+          example: fetch id from entities since 2022-06-02 until 2022-06-01
+    PaginationReference_next:
+      type: object
+      properties:
+        href:
+          type: string
+          description: The effective link to the next result page
+          example: /monitoring/v1/query/continue?cursor=ewogICJza2lwIiA6IDEwMDAsCiAgInF1ZXJ5IiA6ICJGRVRDSFxuICAgIGlkLFxuICAgIGhlYWx0aF9hc19
+      description: Holds the link to the next page of results.
+  responses:
+    "200":
+      description: |-
+        The API returns a chunked response with a sequence of objects. The first object describes the model of the returned data.
+        The model is followed by a series of datasets of actual values or error objects indicating problems during query execution.
+      headers:
+        transfer-encoding:
+          description: chunked
+          style: simple
+          explode: false
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/QueryResponseArrayBody'
+          examples:
+            Response as a JSON array:
+              value: |-
+                [
+                  {
+                    "type": "model",
+                    "model": {
+                      "name": "m:main",
+                      "fields": [
+                        {
+                          "alias": "id",
+                          "type": "string",
+                          "hints": {
+                            "kind": "entity",
+                            "field": "id",
+                            "type": "apm:service_instance"
+                          }
+                        },
+                        {
+                          "alias": "name",
+                          "type": "string",
+                          "hints": {}
+                        },
+                        {
+                          "alias": "cpm",
+                          "type": "complex",
+                          "hints": {
+                            "kind": "metric",
+                            "type": "apm:response_time"
+                          },
+                          "form": "reference",
+                          "model": {
+                            "name": "m:cpm",
+                            "fields": [
+                              {
+                                "alias": "source",
+                                "type": "string",
+                                "hints": {
+                                  "kind": "metric",
+                                  "field": "source",
+                                  "type": "apm:response_time"
+                                }
+                              },
+                              {
+                                "alias": "cpm",
+                                "type": "timeseries",
+                                "hints": {
+                                  "kind": "metric",
+                                  "type": "apm:response_time"
+                                },
+                                "form": "inline",
+                                "model": {
+                                  "name": "m:cpm_2",
+                                  "fields": [
+                                    {
+                                      "alias": "timestamp",
+                                      "type": "timestamp",
+                                      "hints": {
+                                        "kind": "metric",
+                                        "field": "timestamp",
+                                        "type": "apm:response_time"
+                                      }
+                                    },
+                                    {
+                                      "alias": "min",
+                                      "type": "number",
+                                      "hints": {
+                                        "kind": "metric",
+                                        "field": "min",
+                                        "type": "apm:response_time"
+                                      }
+                                    },
+                                    {
+                                      "alias": "max",
+                                      "type": "number",
+                                      "hints": {
+                                        "kind": "metric",
+                                        "field": "max",
+                                        "type": "apm:response_time"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "data",
+                    "model": {
+                      "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:main')]",
+                      "$model": "m:main"
+                    },
+                    "metadata": {
+                      "since": "2022-06-14T09:21:18.143353Z",
+                      "until": "2022-06-17T09:21:18.143353Z"
+                    },
+                    "dataset": "d:main",
+                    "data": [
+                      [
+                        "apm:service_instance:QkYwm51nMAeUADsp4uY6NA",
+                        "Query Service",
+                        {
+                          "$dataset": "d:metrics-1",
+                          "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-1')]"
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "type": "heartbeat"
+                  },
+                  {
+                    "type": "data",
+                    "model": {
+                      "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:cpm')]",
+                      "$model": "m:cpm"
+                    },
+                    "metadata": {
+                      "granularitySeconds": 60
+                    },
+                    "dataset": "d:metrics-1",
+                    "data": [
+                      [
+                        "sys:derived",
+                        [
+                          [
+                            "2022-06-16T10:00Z",
+                            470995,
+                            53246567
+                          ],
+                          [
+                            "2022-06-16T11:00Z",
+                            460153,
+                            94186816
+                          ],
+                          [
+                            "2022-06-16T12:00Z",
+                            460708,
+                            81749730
+                          ]
+                        ]
+                      ]
+                    ]
+                  },
+                  {
+                    "type": "error",
+                    "error": {
+                      "timestamp": "2022-06-17T09:29:52.578280Z",
+                      "errorCode": "MS-001",
+                      "title": "General Error",
+                      "detail": "Metric data error (logged with TraceId: [cb7d28a9c4cb41cb88f90db48149d78d], SpanId: [c5937a4300964f2f])",
+                      "traceId": "cb7d28a9c4cb41cb88f90db48149d78d",
+                      "tenantId": "0baa5ce3-b54c-4153-b902-1208262aa3e1",
+                      "query": "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time) {source, timestamp, min, max} from entities(apm:service)[attributes(service.namespace) = 'Levitate'].out.to(apm:service_instance) since -3h"
+                    }
+                  }
+                ]
+        application/x-ndjson:
+          schema:
+            $ref: '#/components/schemas/inline_response_200'
+          examples:
+            (Part 1) Streamed JSON response as a sequence of newline-delimited JSON objects:
+              description: |-
+                Each object is printed on a single line delimited by ASCII control character `\n`.
+                JSON objects in the example are indented for better readability.
+              value: |-
+                {
+                  "type": "model",
+                  "model": {
+                    "name": "m:main",
+                    "fields": [
+                      {
+                        "alias": "id",
+                        "type": "string",
+                        "hints": {
+                          "kind": "entity",
+                          "field": "id",
+                          "type": "apm:service_instance"
+                        }
+                      },
+                      {
+                        "alias": "name",
+                        "type": "string",
+                        "hints": {}
+                      },
+                      {
+                        "alias": "cpm",
+                        "type": "complex",
+                        "hints": {
+                          "kind": "metric",
+                          "type": "apm:response_time"
+                        },
+                        "form": "reference",
+                        "model": {
+                          "name": "m:cpm",
+                          "fields": [
+                            {
+                              "alias": "source",
+                              "type": "string",
+                              "hints": {
+                                "kind": "metric",
+                                "field": "source",
+                                "type": "apm:response_time"
+                              }
+                            },
+                            {
+                              "alias": "cpm",
+                              "type": "timeseries",
+                              "hints": {
+                                "kind": "metric",
+                                "type": "apm:response_time"
+                              },
+                              "form": "inline",
+                              "model": {
+                                "name": "m:cpm_2",
+                                "fields": [
+                                  {
+                                    "alias": "timestamp",
+                                    "type": "timestamp",
+                                    "hints": {
+                                      "kind": "metric",
+                                      "field": "timestamp",
+                                      "type": "apm:response_time"
+                                    }
+                                  },
+                                  {
+                                    "alias": "min",
+                                    "type": "number",
+                                    "hints": {
+                                      "kind": "metric",
+                                      "field": "min",
+                                      "type": "apm:response_time"
+                                    }
+                                  },
+                                  {
+                                    "alias": "max",
+                                    "type": "number",
+                                    "hints": {
+                                      "kind": "metric",
+                                      "field": "max",
+                                      "type": "apm:response_time"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+            (Part 2) Directly followed by next object in the body (Objects are not in an array):
+              description: |-
+                A chunk of type <em>data</em> might contain a pagination <em>_links</em> element which when followed will retrieve the next page of results.
+                The example given below is fictitious and does not represent a valid cursor.
+              value: |-
+                {
+                  "type": "data",
+                  "model": {
+                    "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:main')]",
+                    "$model": "m:main"
+                  },
+                  "metadata": {
+                    "since": "2022-06-14T09:21:18.143353Z",
+                    "until": "2022-06-17T09:21:18.143353Z"
+                  },
+                  "dataset": "d:main",
+                  "_links": {
+                    "next": {
+                      "href": "/monitoring/v1/query/continue?cursor=ewogICJza2lwIiA6IDEsCiAgInF1ZXJ5IiA6ICJmZXRjaCBpZDogaWQsIG5hbWU6IG"
+                    }
+                  },
+                  "data": [
+                    [
+                      "apm:service_instance:QkYwm51nMAeUADsp4uY6NA",
+                      "Query Service",
+                      {
+                        "$dataset": "d:metrics-1",
+                        "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-1')]"
+                      }
+                    ],
+                    [
+                      "apm:service_instance:4Qb9EQ9QOHKcSA1l6w5ncQ",
+                      "Query Service",
+                      {
+                        "$dataset": "d:metrics-2",
+                        "$jsonPath": "$..[?(@.type == 'data' && @.dataset == 'd:metrics-2')]"
+                      }
+                    ]
+                  ]
+                }
+            (Part 3) Datasets might be referenced from other datasets and might contain nested timeseries.:
+              value: |-
+                {
+                  "type": "data",
+                  "model": {
+                    "$jsonPath": "$..[?(@.type == 'model')]..[?(@.name == 'm:cpm')]",
+                    "$model": "m:cpm"
+                  },
+                  "metadata": {
+                    "granularitySeconds": 60
+                  },
+                  "dataset": "d:metrics-1",
+                  "data": [
+                    [
+                      "sys:derived",
+                      [
+                        [
+                          "2022-06-16T10:00Z",
+                          470995,
+                          53246567
+                        ],
+                        [
+                          "2022-06-16T11:00Z",
+                          460153,
+                          94186816
+                        ],
+                        [
+                          "2022-06-16T12:00Z",
+                          460708,
+                          81749730
+                        ]
+                      ]
+                    ]
+                  ]
+                }
+            (Part 4) Possibly an error:
+              value: |-
+                {
+                  "type": "error",
+                  "error": {
+                    "timestamp": "2022-06-17T09:29:52.578280Z",
+                    "errorCode": "MS-001",
+                    "title": "General Error",
+                    "detail": "Metric data error (logged with TraceId: [cb7d28a9c4cb41cb88f90db48149d78d], SpanId: [c5937a4300964f2f])",
+                    "traceId": "cb7d28a9c4cb41cb88f90db48149d78d",
+                    "tenantId": "0baa5ce3-b54c-4153-b902-1208262aa3e1",
+                    "query": "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time) {source, timestamp, min, max} from entities(apm:service)[attributes(service.namespace) = 'Levitate'].out.to(apm:service_instance) since -3h"
+                  }
+                }
+            (Part 5) Heartbeat if needed to make sure the connection is kept alive:
+              value: |-
+                {
+                  "type": "heartbeat"
+                }
+    "400":
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+          example:
+            type: https://developer.cisco.com/docs/appdynamics/errors/#!input-validation
+            timestamp: 2020-02-22T11:22:33.980629Z
+            traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+            title: Query compilation failure!
+            detail: Unable to compile due to query semantic errors.
+            tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+            query: fetch id from (apm:serviceX)
+            compilationErrors:
+            - message: Unknown alias 'id'
+              fixSuggestion: ""
+              fixPossibilities: []
+              errorType: SEMANTIC
+              errorFrom: 1:6
+              errorTo: 1:7
+            - message: "Referenced topology set has errors: 1:23-1:34"
+              fixPossibilities: []
+              errorType: SEMANTIC
+              errorFrom: 1:6
+              errorTo: 1:7
+            - message: No Type found in the Schema for apm:serviceX with any specified
+                namespace or namespace common if none was specified
+              fixSuggestion: Did you mean 'apm:service'?
+              fixPossibilities:
+              - apm:service
+              - apm:service_endpoint
+              - apm:service_instance
+              errorType: SEMANTIC
+              errorFrom: 1:23
+              errorTo: 1:34
+    "403":
+      description: Forbidden
+    "500":
+      description: Internal Server Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+          example:
+            type: https://developer.cisco.com/docs/appdynamics/errors/#!internal-server-error
+            timestamp: 2020-02-22T11:22:33.980629Z
+            traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+            title: Internal Server Error
+            detail: Unexpected error happened (logged as 224397de-5843-4954-b092-37c84aead3c9)
+            tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+            query: fetch id from entities since 2022-06-02 until 2022-06-01
+    "503":
+      description: Service Unavailable
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ErrorResult'
+          example:
+            type: https://developer.cisco.com/docs/appdynamics/errors/#!internal-server-error
+            timestamp: 2020-02-22T11:22:33.980629Z
+            traceId: fc3decb4bf674b7cb16c5f208fb1f18b
+            title: Service Unavailable
+            detail: Unexpected error happened (logged as 224397de-5843-4954-b092-37c84aead3c9)
+            tenantId: 47a01df9-54a0-472b-96b8-7c8f64eb7cbf
+            query: fetch id from entities since 2022-06-02 until 2022-06-01
+x-visibility-level: external
+x-doc-visibility-level: private
