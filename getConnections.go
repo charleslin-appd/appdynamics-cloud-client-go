@@ -10,7 +10,7 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-func main() {
+func getConnections() {
 
 	// set up the struct according to clientcredentials package
 	ccConfig := clientcredentials.Config{

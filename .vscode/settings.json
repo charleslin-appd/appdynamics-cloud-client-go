@@ -3,6 +3,7 @@
     "accesstoken",
     "apikey",
     "appdcloudconnection",
+    "appdcloudquery",
     "clientcredentials",
     "Codegen",
     "insenstive",
