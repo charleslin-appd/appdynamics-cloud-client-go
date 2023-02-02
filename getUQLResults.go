@@ -43,7 +43,7 @@ func main() {
 		Query: "fetch id: id, name: attributes(service.name), cpm: metrics(apm:response_time) {timestamp, value} from entities(apm:service)[attributes(service.namespace) = 'demo-app-manoselv' && attributes(service.name) = 'payment-service'] since -10m"})
 
 	// make the call
-	resp, httpRes, err := client.ExecuteQueryApi.ExecuteQuery(context.Background(), &appdcloudquery_v1.ExecuteQueryApiExecuteQueryOpts{query})
+	resp, httpRes, err := client.ExecuteQueryApi.ExecuteQuery(context.Background(), &appdcloudquery_v1.ExecuteQueryApiExecuteQueryOpts{Body: query})
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
