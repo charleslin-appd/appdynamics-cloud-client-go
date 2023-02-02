@@ -33,6 +33,7 @@ func main() {
 	auth := context.WithValue(context.Background(), appdcloudquery_v1.ContextOAuth2, token)
 
 	apiConfiguration := appdcloudquery_v1.NewConfiguration()
+	apiConfiguration.BasePath = "https://lab1.observe.appdynamics.com/monitoring/v1"
 	// Assign the Configures's HTTPClient to credential client with the token source, otherwise
 	// it will default to the DefaultClient
 	apiConfiguration.HTTPClient = ccConfig.Client(auth)
