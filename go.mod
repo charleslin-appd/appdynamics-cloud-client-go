@@ -1,4 +1,4 @@
-module github.com/linchar/appd_cloud_api_client
+module github.com/charleslin-appd/appdynamics-cloud-client-go
 
 go 1.18
 
